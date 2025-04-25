@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vue Full Page Example</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    nav { background-color: #333; color: white; padding: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    nav a { color: white; margin: 0.5rem; text-decoration: none; }
+    .container { padding: 2rem; }
+    .slider img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; }
+    input, button, select { padding: 0.5rem; margin: 0.5rem 0; width: 100%; max-width: 400px; display: block; }
+    ul { list-style: none; padding: 0; }
+    li { background: #f1f1f1; padding: 0.5rem; margin: 0.3rem 0; border-radius: 5px; }
+    label { display: block; margin: 0.3rem 0; }
+    .toggle-btn { margin-top: 1rem; background-color: #007bff; color: white; border: none; cursor: pointer; padding: 0.5rem 1rem; }
+    @media (max-width: 600px) {
+      nav { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Navbar using v-for -->
+    <nav>
+      <div><strong>Vue Directives Demo</strong></div>
+      <div>
+        <a href="#" v-for="link in navLinks" :key="link">{{ link }}</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Image Slider with :src and @click -->
+      <div class="slider">
+        <img :src="images[currentImage]" alt="Slide Image">
+        <div style="margin-top: 1rem;">
+          <button @click="prevImage">Prev</button>
+          <button @click="nextImage">Next</button>
+        </div>
+      </div>
+
+      <!-- Toggle Section with v-show -->
+      <button class="toggle-btn" @click="showForm = !showForm">
+        {{ showForm ? 'Hide' : 'Show' }} Form Section
+      </button>
+
+      <div v-show="showForm">
+        <h3>Form Example (with v-model, v-for, v-if)</h3>
+
+        <!-- Text Inputs with v-model -->
+        <label>Name:</label>
+        <input v-model="formData.name" placeholder="Enter your name">
+
+        <label>Email:</label>
+        <input type="email" v-model="formData.email" placeholder="Enter your email">
+
+        <!-- Radio Buttons with v-model -->
+        <label>Gender:</label>
+        <label><input type="radio" value="Male" v-model="formData.gender"> Male</label>
+        <label><input type="radio" value="Female" v-model="formData.gender"> Female</label>
+        <label><input type="radio" value="Other" v-model="formData.gender"> Other</label>
+
+        <!-- Checkboxes with v-model (array) -->
+        <label>Interests:</label>
+        <label v-for="interest in interestOptions" :key="interest">
+          <input type="checkbox" :value="interest" v-model="formData.interests"> {{ interest }}
+        </label>
+
+        <!-- Add Item Form with v-model and v-for -->
+        <label>Add Item:</label>
+        <input v-model="newItem" placeholder="New item" @keyup.enter="addItem">
+        <button @click="addItem">Add</button>
+
+        <!-- Item List with v-if / v-else -->
+        <ul v-if="items.length > 0">
+          <li v-for="(item, index) in items" :key="index">
+            {{ index + 1 }}. {{ item }}
+            <button @click="removeItem(index)" style="float: right;">❌</button>
+          </li>
+        </ul>
+        <p v-else>No items yet. Add something!</p>
+      </div>
+
+      <!-- v-show toggle example -->
+      <div style="margin-top: 2rem;">
+        <button class="toggle-btn" @click="showExtra = !showExtra">
+          Toggle Extra Message
+        </button>
+        <p v-show="showExtra" style="margin-top: 1rem;">
+          🎉 This is a message shown using <code>v-show</code>!
+        </p>
+      </div>
+
+      <!-- Display form values -->
+      <h4>Form Data Preview:</h4>
+      <pre>{{ formData }}</pre>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          navLinks: ["Home", "Gallery", "Form", "Contact"],
+          images: [
+            "https://picsum.photos/id/1005/800/300",
+            "https://picsum.photos/id/1006/800/300",
+            "https://picsum.photos/id/1008/800/300"
+          ],
+          currentImage: 0,
+          showForm: true,
+          showExtra: false,
+          formData: {
+            name: "",
+            email: "",
+            gender: "",
+            interests: []
+          },
+          interestOptions: ["Music", "Coding", "Travel", "Gaming"],
+          newItem: "",
+          items: ["Vue.js is awesome!", "Learn Vue directives"]
+        };
+      },
+      methods: {
+        nextImage() {
+          this.currentImage = (this.currentImage + 1) % this.images.length;
+        },
+        prevImage() {
+          this.currentImage = (this.currentImage - 1 + this.images.length) % this.images.length;
+        },
+        addItem() {
+          if (this.newItem.trim()) {
+            this.items.push(this.newItem.trim());
+            this.newItem = "";
+          }
+        },
+        removeItem(index) {
+          this.items.splice(index, 1);
+        }
+      }
+    }).mount("#app");
+  </script>
+</body>
+</html>
